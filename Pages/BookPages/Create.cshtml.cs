@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Rosiuta_Alicia_Lab2.Models;
 
@@ -16,6 +17,8 @@ public class CreateModel : PageModel
 
     public IActionResult OnGet()
     {
+        ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "PublisherName");
+        ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FullName");
         return Page();
     }
 
@@ -27,6 +30,8 @@ public class CreateModel : PageModel
     {
         if (!ModelState.IsValid)
         {
+            ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "PublisherName");
+            ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FullName");
             return Page();
         }
 

@@ -10,6 +10,15 @@
 <p>
     <a asp-page="Create">Create New</a>
 </p>
+
+<form method="get" class="mb-3">
+    <label asp-for="AuthorID" class="control-label">Author</label>
+    <select asp-for="AuthorID" class="form-control d-inline-block w-auto" asp-items="ViewBag.AuthorList">
+        <option value="">-- All authors --</option>
+    </select>
+    <input type="submit" value="Filter" class="btn btn-secondary" />
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -17,30 +26,37 @@
                 @Html.DisplayNameFor(model => model.Book[0].Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Book[0].Author)
+                @Html.DisplayNameFor(model => model.Book[0].Author.FullName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Book[0].Price)
             </th>
-            <th> 
-                @Html.DisplayNameFor(model => model.Book[0].PublishingDate) 
+            <th>
+                @Html.DisplayNameFor(model => model.Book[0].PublishingDate)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Book[0].Publisher.PublisherName)
+            </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model.Book) {
         <tr>
             <td>
-                @Html.DisplayFor(model => item.Title)
+                @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(model => item.Author)
+                @Html.DisplayFor(modelItem => item.Author.FullName)
             </td>
             <td>
-                @Html.DisplayFor(model => item.Price)
+                @Html.DisplayFor(modelItem => item.Price)
             </td>
-            <td>                 
-                @Html.DisplayFor(modelItem => item.PublishingDate)             
+            <td>
+                @Html.DisplayFor(modelItem => item.PublishingDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Publisher.PublisherName)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |

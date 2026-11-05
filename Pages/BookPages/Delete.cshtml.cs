@@ -24,7 +24,10 @@ public class DeleteModel : PageModel
             return NotFound();
         }
 
-        var book = await _context.Book.FirstOrDefaultAsync(m => m.ID == id);
+        var book = await _context.Book
+            .Include(b => b.Publisher)
+            .Include(b => b.Author)
+            .FirstOrDefaultAsync(m => m.ID == id);
         if (book is null)
         {
             return NotFound();
