@@ -20,19 +20,29 @@ public class IndexModel : PageModel
     public int BookID { get; set; }
     public int CategoryID { get; set; }
 
+    public string TitleSort { get; set; }
+    public string AuthorSort { get; set; }
+
+    public string CurrentFilter { get; set; }
+
     // autorul ales din dropdown (null = toti autorii) - de la lab 2
     [BindProperty(SupportsGet = true)]
     public int? AuthorID { get; set; }
 
-    public async Task OnGetAsync(int? id, int? categoryID)
+    public async Task OnGetAsync(int? id, int? categoryID, string sortOrder, string searchString)
     {
         ViewData["AuthorList"] = new SelectList(_context.Set<Author>(), "ID", "FullName", AuthorID);
 
         BookD = new BookData();
 
+        TitleSort = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+        AuthorSort = sortOrder == "author" ? "author_desc" : "author";
+
+        CurrentFilter = searchString;
+
         var books = _context.Book
-            .Include(b => b.Publisher)
             .Include(b => b.Author)
+            .Include(b => b.Publisher)
             .Include(b => b.BookCategories)
                 .ThenInclude(b => b.Category)
             .AsNoTracking()
@@ -47,6 +57,15 @@ public class IndexModel : PageModel
             .OrderBy(b => b.Title)
             .ToListAsync();
 
+        // cautare dupa titlu sau dupa numele autorului
+        if (!String.IsNullOrEmpty(searchString))
+        {
+            BookD.Books = BookD.Books.Where(s =>
+                   (s.Author != null && s.Author.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                || (s.Author != null && s.Author.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                || s.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase));
+        }
+
         if (id != null)
         {
             BookID = id.Value;
@@ -56,6 +75,23 @@ public class IndexModel : PageModel
             {
                 BookD.Categories = book.BookCategories.Select(s => s.Category!);
             }
+        }
+
+        // sortare
+        switch (sortOrder)
+        {
+            case "title_desc":
+                BookD.Books = BookD.Books.OrderByDescending(s => s.Title);
+                break;
+            case "author_desc":
+                BookD.Books = BookD.Books.OrderByDescending(s => s.Author?.FullName ?? "");
+                break;
+            case "author":
+                BookD.Books = BookD.Books.OrderBy(s => s.Author?.FullName ?? "");
+                break;
+            default:
+                BookD.Books = BookD.Books.OrderBy(s => s.Title);
+                break;
         }
     }
 }
