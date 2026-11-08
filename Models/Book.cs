@@ -22,6 +22,8 @@ namespace Rosiuta_Alicia_Lab2.Models
         public int? AuthorID { get; set; }
         public Author? Author { get; set; } //navigation property
 
+        public ICollection<Borrowing>? Borrowings { get; set; }
+
         [Display(Name = "Categories")]
         public ICollection<BookCategory>? BookCategories { get; set; }
     }
